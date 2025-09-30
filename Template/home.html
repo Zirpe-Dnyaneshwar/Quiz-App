@@ -1,124 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz App</title>
-
+  <title>Quiz App Compact</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
-  text-align: center;
-}
-
-.quiz-container {
-  width: 500px;
-  margin: auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px gray;
-}
-
-button {
-  background: #007BFF;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-button:hover {
-  background: #0056b3;
-}
-
+    .fade-in { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(5px);} to{opacity:1; transform: translateY(0);} }
+    .progress-bar { transition: width 0.3s ease-in-out; }
   </style>
 </head>
-<body>
-    <script>
-        const quizData = [
-  {
-    question: "Which language runs in a web browser?",
-    answers: {
-      a: "Java",
-      b: "C",
-      c: "Python",
-      d: "JavaScript"
-    },
-    correct: "d"
-  },
-  {
-    question: "What does CSS stand for?",
-    answers: {
-      a: "Central Style Sheets",
-      b: "Cascading Style Sheets",
-      c: "Cascading Simple Sheets",
-      d: "Cars SUVs Sailboats"
-    },
-    correct: "b"
-  },
-  {
-    question: "What does HTML stand for?",
-    answers: {
-      a: "Hypertext Markup Language",
-      b: "Hyper Trainer Marking Language",
-      c: "Hyperlinks and Text Markup Language",
-      d: "Home Tool Markup Language"
-    },
-    correct: "a"
-  }
-];
 
-const quizContainer = document.getElementById('quiz');
-const resultsContainer = document.getElementById('results');
-const submitButton = document.getElementById('submit');
+<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 min-h-screen flex flex-col items-center justify-center px-3">
+  <div class="bg-white w-full max-w-3xl p-4 sm:p-6 rounded-2xl shadow-xl fade-in" id="quiz-box">
+    <h1 class="text-2xl sm:text-3xl font-bold text-center text-indigo-700 mb-4">✨ Quiz App ✨</h1>
 
-function buildQuiz() {
-  const output = [];
-  quizData.forEach((currentQuestion, questionNumber) => {
-    const answers = [];
-    for (letter in currentQuestion.answers) {
-      answers.push(
-        `<label>
-          <input type="radio" name="question${questionNumber}" value="${letter}">
-          ${letter} : ${currentQuestion.answers[letter]}
-        </label><br>`
-      );
-    }
-    output.push(
-      `<div class="question"> ${currentQuestion.question} </div>
-      <div class="answers"> ${answers.join("")} </div><br>`
-    );
-  });
-  quizContainer.innerHTML = output.join("");
-}
+    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+      <div id="progress" class="bg-gradient-to-r from-indigo-500 to-pink-500 h-2 rounded-full progress-bar" style="width: 0%"></div>
+    </div>
 
-function showResults() {
-  const answerContainers = quizContainer.querySelectorAll('.answers');
-  let score = 0;
-  quizData.forEach((currentQuestion, questionNumber) => {
-    const answerContainer = answerContainers[questionNumber];
-    const selector = `input[name=question${questionNumber}]:checked`;
-    const userAnswer = (answerContainer.querySelector(selector) || {}).value;
-    if (userAnswer === currentQuestion.correct) {
-      score++;
-    }
-  });
-  resultsContainer.innerHTML = `You scored ${score} out of ${quizData.length}`;
-}
+    <div class="text-right mb-2">
+      <span class="text-sm sm:text-base font-semibold text-red-600">⏳ Time Left: <span id="timer">05:00</span></span>
+    </div>
 
-buildQuiz();
-submitButton.addEventListener('click', showResults);
+    <div id="quiz-area"></div>
 
-    </script>
-  <div class="quiz-container">
-    <h1>Simple Quiz App</h1>
-    <div id="quiz"></div>
-    <button id="submit">Submit Quiz</button>
-    <div id="results"></div>
+    <div class="flex justify-between mt-4">
+      <button id="prevBtn" class="hidden bg-gray-400 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg shadow transition">⬅ Prev</button>
+      <button id="nextBtn" class="bg-indigo-500 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg shadow transition">Next ➡</button>
+    </div>
   </div>
-  <script src="script.js"></script>
+
+  <footer class="mt-4 text-center text-white text-xs sm:text-sm opacity-90">
+    ✨ Designed by <span class="font-semibold">Dnyaneshwar Zirpe</span> ✨
+  </footer>
+
+  <script>
+    const questions = [
+      { q: "Which language runs in a web browser?", options: ["Java","C","Python","JavaScript"], answer: 3 },
+      { q: "CSS stands for?", options: ["Central Style Sheets","Cascading Style Sheets","Cascading Simple Sheets","Cars SUVs Sailboats"], answer:1 },
+      { q: "Which company developed Java?", options:["Microsoft","Apple","Sun Microsystems","Google"], answer:2 },
+      { q: "HTML stands for?", options:["Hyper Text Preprocessor","Hyper Text Markup Language","Hyperlinks and Text Markup Language","Home Tool Markup Language"], answer:1 },
+      { q: "Not a programming language?", options:["Python","HTML","C++","Java"], answer:1 },
+      { q: "Keyword to create Python function?", options:["func","def","function","lambda"], answer:1 },
+      { q: "Python file extension?", options:[".pt",".pyt",".py",".pyth"], answer:2 },
+      { q: "Python comment symbol?", options:["//","/* */","#","<!-- -->"], answer:2 },
+      { q: "Tag to link CSS in HTML?", options:["<style>","<css>","<link>","<script>"], answer:2 },
+      { q: "CSS property to change text color?", options:["font-color","text-color","color","background-color"], answer:2 },
+      { q: "JavaScript is a ____ language.", options:["Programming","Scripting","Markup","Style"], answer:1 },
+      { q: "Not a Python data type?", options:["List","Tuple","Set","Array"], answer:3 },
+      { q: "Django is a framework of?", options:["C++","Python","Java","PHP"], answer:1 },
+      { q: "Python exponent operator?", options:["^","**","exp()","pow"], answer:1 },
+      { q: "SQL stands for?", options:["Strong Question Language","Structured Query Language","Stylish Question Language","Statement Query Language"], answer:1 },
+      { q: "Largest HTML heading?", options:["<heading>","<h6>","<h1>","<head>"], answer:2 },
+      { q: "Bootstrap mainly used for?", options:["Database","Styling & UI","Backend","Networking"], answer:1 },
+      { q: "Default Django dev server port?", options:["3000","8080","5000","8000"], answer:3 },
+      { q: "Python ML library?", options:["NumPy","Pandas","Scikit-learn","Matplotlib"], answer:2 },
+      { q: "Git mainly used for?", options:["Deployment","Version Control","Testing","Database"], answer:1 }
+    ];
+
+    let current = 0, userAnswers=[];
+    const quizArea=document.getElementById("quiz-area"), nextBtn=document.getElementById("nextBtn"),
+          prevBtn=document.getElementById("prevBtn"), progress=document.getElementById("progress"),
+          timerElement=document.getElementById("timer");
+    let timeLeft = 5*60, timerInterval;
+
+    function startTimer(){
+      timerInterval = setInterval(()=>{
+        let m=Math.floor(timeLeft/60), s=timeLeft%60;
+        timerElement.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        if(timeLeft<=0){ clearInterval(timerInterval); checkUnansweredAndSubmit(); }
+        timeLeft--;
+      },1000);
+    }
+
+    function updateProgress(){ progress.style.width=((current+1)/questions.length*100)+"%"; }
+
+    function loadQuestion(index){
+      const q=questions[index];
+      quizArea.innerHTML=`<h2 class="text-lg font-semibold mb-2">${index+1}. ${q.q}</h2>
+        <div class="space-y-1">
+        ${q.options.map((opt,i)=>`<label class="block p-1 border rounded cursor-pointer transition text-sm hover:bg-indigo-100">
+          <input type="radio" name="option" value="${i}" ${userAnswers[index]==i?'checked':''}> ${opt}
+        </label>`).join('')}
+        </div>`;
+      prevBtn.classList.toggle("hidden", index===0);
+      nextBtn.textContent = index===questions.length-1?"Submit ✅":"Next ➡";
+      updateProgress();
+    }
+
+    function checkUnansweredAndSubmit(){
+      const allAnswered=questions.every((_,i)=>userAnswers[i]!=null);
+      if(!allAnswered){ alert("⚠️ Please answer all questions!"); return; }
+      showResult();
+    }
+
+    function showResult(){
+      clearInterval(timerInterval);
+      let score=0; questions.forEach((q,i)=>{ if(userAnswers[i]==q.answer) score++; });
+      quizArea.innerHTML=`<h2 class="text-xl font-bold text-green-600 mb-2">🎉 Quiz Completed!</h2>
+        <p class="text-sm">Score: <span class="font-bold">${score}</span>/${questions.length}</p>
+        <p class="mt-1 text-xs sm:text-sm">Percentage: <span class="font-semibold">${((score/questions.length)*100).toFixed(2)}%</span></p>
+        <button onclick="restartQuiz()" class="mt-2 bg-purple-500 hover:bg-purple-700 text-white px-4 py-1.5 rounded shadow transition">🔄 Try Again</button>`;
+      nextBtn.classList.add("hidden"); prevBtn.classList.add("hidden"); progress.style.width="100%";
+    }
+
+    function restartQuiz(){ current=0; userAnswers=[]; timeLeft=5*60; clearInterval(timerInterval); startTimer(); nextBtn.classList.remove("hidden"); loadQuestion(current); }
+
+    nextBtn.addEventListener("click", ()=>{
+      const selected=document.querySelector("input[name='option']:checked");
+      if(selected) userAnswers[current]=parseInt(selected.value);
+      if(current<questions.length-1){ current++; loadQuestion(current); } else{ checkUnansweredAndSubmit(); }
+    });
+    prevBtn.addEventListener("click",()=>{ if(current>0){ current--; loadQuestion(current); } });
+
+    loadQuestion(current); startTimer();
+  </script>
 </body>
 </html>
