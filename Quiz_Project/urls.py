@@ -21,5 +21,14 @@ from Quiz_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home),
-    path('home',views.home)
+    path('home',views.home),
+    path('c',views.c,name='cprogram'),
+    path('cpp',views.cpp,name='cpp'),
+    path('java',views.java,name='java'),
+    path('python',views.python,name='python'),
+    path('php',views.php,name='php'),
+    path('html',views.qhtml,name='html'),
+    path('javascript',views.qjavascript,name='javascript'),
+    path('login',views.login,name='login'),
+    path('registration',views.registration,name='registration'),
 ]

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page with Password Toggle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Input animation */
+        .input-animate {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .input-animate:hover,
+        .input-animate:focus {
+            border-color: #6366f1;
+            /* indigo-500 */
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Button animation */
+        .btn-animate {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-animate:hover,
+        .btn-animate:focus,
+        .btn-animate:active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
+
+        <div class="bg-white rounded-2xl shadow-xl p-4 w-full max-w-md"  style="margin-top: 70px;">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Register</h1>
+
+            <form id="registerForm" class="space-y-4">
+                <!-- Username -->
+                <div>
+                    <label for="username" class="block text-gray-700 font-semibold mb-1">Username</label>
+                    <input type="text" id="username" placeholder="Enter username"
+                        class="input-animate w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <p id="usernameError" class="text-red-600 text-sm mt-1 hidden">Username must be alphanumeric and max
+                        10 characters.</p>
+                </div>
+
+                <!-- Password -->
+                <div class="relative">
+                    <label for="password" class="block text-gray-700 font-semibold mb-1">Password</label>
+                    <input type="password" id="password" placeholder="Enter password"
+                        class="input-animate w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <span id="togglePassword" class="absolute right-3 top-11 cursor-pointer text-gray-500 select-none">
+                        <i class="fa fa-eye"></i>
+                    </span>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="relative">
+                    <label for="confirmPassword" class="block text-gray-700 font-semibold mb-1">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm password"
+                        class="input-animate w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <span id="toggleConfirmPassword"
+                        class="absolute right-3 top-11 cursor-pointer text-gray-500 select-none">
+                        <i class="fa fa-eye"></i>
+                    </span>
+                    <p id="passwordError" class="text-red-600 text-sm mt-1 hidden">Passwords do not match.</p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="btn-animate w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition">
+                    Register
+                </button>
+            </form>
+
+            <p class="text-center text-sm text-gray-500 mt-4">
+                Already have an account?
+                <a href="{% url 'login'%}" class="text-indigo-600 font-semibold hover:underline">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+        const togglePassword = document.getElementById('togglePassword');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', () => {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+        });
+        toggleConfirmPassword.addEventListener('click', () => {
+            const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPassword.setAttribute('type', type);
+        });
+
+        // Form validation
+        registerForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            let valid = true;
+
+            // Username validation: alphanumeric, max 10 chars
+            const usernamePattern = /^[a-zA-Z0-9]{1,10}$/;
+            if (!usernamePattern.test(username.value)) {
+                usernameError.classList.remove('hidden');
+                valid = false;
+            } else {
+                usernameError.classList.add('hidden');
+            }
+
+            // Password match validation
+            if (password.value !== confirmPassword.value || password.value === "") {
+                passwordError.classList.remove('hidden');
+                valid = false;
+            } else {
+                passwordError.classList.add('hidden');
+            }
+
+            if (valid) {
+                alert("✅ Registration Successful!");
+                registerForm.reset();
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Navbar with Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+
+  <!-- Navbar -->
+  <nav class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-lg fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center h-16">
+
+        <!-- Logo -->
+        <div class="flex-shrink-0 text-2xl font-bold tracking-wider">
+          Quiz<span class="text-yellow-300">Zone</span>
+        </div>
+
+        <!-- Menu -->
+        <div class="hidden md:flex space-x-6 font-medium">
+          <a href="{% url 'cprogram' %}" class="hover:text-yellow-300 transition">C Language</a>
+          <a href="{% url 'cpp' %}" class="hover:text-yellow-300 transition">C++</a>
+          <a href="{% url 'java' %}" class="hover:text-yellow-300 transition">Java</a>
+          <a href="{% url 'python' %}" class="hover:text-yellow-300 transition">Python</a>
+          <a href="{% url 'php' %}" class="hover:text-yellow-300 transition">PHP</a>
+          <a href="{% url 'html'%}" class="hover:text-yellow-300 transition">HTML</a>
+          <a href="{% url 'javascript' %}" class="hover:text-yellow-300 transition">JavaScript</a>
+        </div>
+
+        <!-- User Login / Profile -->
+        <div class="hidden md:flex items-center space-x-4">
+          <a href="{% url 'login'%}">
+            <button id="loginBtn" 
+            class="bg-yellow-400 text-black px-4 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
+            Login
+          </button>
+          </a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden flex items-center space-x-2">
+          <button id="mobileLoginBtn" class="bg-yellow-400 text-black px-3 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
+            Login
+          </button>
+          <button id="menu-btn" class="focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="white" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-indigo-700 px-4 pb-4 space-y-2">
+      <a href="{% url 'cprogram' %}" class="block hover:text-yellow-300">C</a>
+      <a href="{% url 'cpp' %}" class="block hover:text-yellow-300">C++</a>
+      <a href="{% url 'java' %}" class="block hover:text-yellow-300">Java</a>
+      <a href="{% url 'python' %}" class="block hover:text-yellow-300">Python</a>
+      <a href="{% url 'php' %}" class="block hover:text-yellow-300">PHP</a>
+      <a href="{% url 'html'%}" class="block hover:text-yellow-300">HTML</a>
+      <a href="{% url 'javascript' %}" class="block hover:text-yellow-300">JavaScript</a>
+    </div>
+  </nav>
+
+  
+
+  <script>
+    // Mobile Menu Toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Login Modal Toggle
+    const loginBtnDesktop = document.getElementById('loginBtn');
+    const loginBtnMobile = document.getElementById('mobileLoginBtn');
+    const loginModal = document.getElementById('loginModal');
+    const closeModal = document.getElementById('closeModal');
+
+    function openModal() { loginModal.classList.remove('hidden'); }
+    function closeModalFunc() { loginModal.classList.add('hidden'); }
+
+    loginBtnDesktop.addEventListener('click', openModal);
+    loginBtnMobile.addEventListener('click', openModal);
+    closeModal.addEventListener('click', closeModalFunc);
+
+    // Close modal on clicking outside the modal content
+    loginModal.addEventListener('click', (e) => {
+      if (e.target === loginModal) closeModalFunc();
+    });
+  </script>
+
+</body>
+</html>

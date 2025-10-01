@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz App Compact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'navbar.html'%}
+    <br><br>
+    <div
+        class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 min-h-screen flex flex-col items-center justify-center px-3">
+        <div class="bg-white w-full text-neutral-600 max-w-3xl p-4 sm:p-6 rounded-2xl shadow-xl fade-in" id="quiz-box">
+            <h1 class="text-2xl sm:text-3xl font-bold text-center text-indigo-700 mb-4">✨ Quiz App ✨</h1>
+            <h5 class="text-indigo-700">PHP Questions</h5>
+
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                <div id="progress" class="bg-gradient-to-r from-indigo-500 to-pink-500 h-2 rounded-full progress-bar"
+                    style="width: 0%"></div>
+            </div>
+
+            <div class="text-right mb-2">
+                <span class="text-sm sm:text-base font-semibold text-red-600">⏳ Time Left: <span
+                        id="timer">05:00</span></span>
+            </div>
+
+            <div id="quiz-area"></div>
+
+            <div class="flex justify-between mt-4">
+                <button id="prevBtn"
+                    class="hidden bg-gray-400 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg shadow transition">⬅
+                    Prev</button>
+                <button id="nextBtn"
+                    class="bg-indigo-500 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg shadow transition">Next
+                    ➡</button>
+            </div>
+        </div>
+
+        <footer class="mt-4 text-center text-white text-xs sm:text-sm opacity-90">
+            ✨ Designed by <span class="font-semibold">Dnyaneshwar Zirpe</span> ✨
+        </footer>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "PHP stands for?", options: ["Private Home Page", "Personal Hypertext Processor", "PHP: Hypertext Preprocessor", "Pretext Hypertext Processor"], answer: 2 },
+            { q: "Who developed PHP?", options: ["Rasmus Lerdorf", "Guido van Rossum", "James Gosling", "Bjarne Stroustrup"], answer: 0 },
+            { q: "PHP files are identified by which extension?", options: [".php", ".html", ".phtml", "Both .php and .phtml"], answer: 3 },
+            { q: "Which of the following is used to output data in PHP?", options: ["echo", "print", "Both echo and print", "printf only"], answer: 2 },
+            { q: "Which symbol is used to start a variable in PHP?", options: ["@", "$", "&", "#"], answer: 1 },
+            { q: "PHP is a ____ language.", options: ["Server-side scripting", "Client-side scripting", "Both", "Markup"], answer: 0 },
+            { q: "Which function is used to get the length of a string in PHP?", options: ["strlen()", "size()", "length()", "strlength()"], answer: 0 },
+            { q: "Which of the following is used to connect to a MySQL database in PHP?", options: ["mysqli_connect()", "connect_mysql()", "mysql_connect()", "db_connect()"], answer: 0 },
+            { q: "Which of the following is used to start a session in PHP?", options: ["session_start()", "start_session()", "session_init()", "init_session()"], answer: 0 },
+            { q: "Which of the following is not a PHP data type?", options: ["String", "Integer", "Boolean", "Character"], answer: 3 },
+            { q: "Which of the following is used to define a constant in PHP?", options: ["define()", "const", "constant()", "Both define() and const"], answer: 3 },
+            { q: "Which of the following is the correct way to end a PHP statement?", options: ["Period .", "Colon :", "Semicolon ;", "Comma ,"], answer: 2 },
+            { q: "Which superglobal variable holds form data sent via POST method?", options: ["$_POST", "$POST", "$_GET", "$POSTDATA"], answer: 0 },
+            { q: "Which function is used to include files in PHP?", options: ["include()", "require()", "Both include() and require()", "import()"], answer: 2 },
+            { q: "Which operator is used for concatenation in PHP?", options: ["+", ".", "&", "&&"], answer: 1 },
+            { q: "PHP is mainly used for?", options: ["Frontend design", "Backend development", "Database only", "Networking"], answer: 1 },
+            { q: "Which of the following is used to check the data type of a variable in PHP?", options: ["type()", "gettype()", "typeof()", "datatype()"], answer: 1 },
+            { q: "Which of the following is used to destroy a session in PHP?", options: ["session_destroy()", "destroy_session()", "end_session()", "stop_session()"], answer: 0 },
+            { q: "Which of the following is used to check if a variable is set in PHP?", options: ["isset()", "empty()", "is_set()", "varset()"], answer: 0 },
+            { q: "PHP code is executed on ____.", options: ["Client-side", "Server-side", "Both", "None"], answer: 1 }
+        ];
+
+
+
+        let current = 0, userAnswers = [];
+        const quizArea = document.getElementById("quiz-area"), nextBtn = document.getElementById("nextBtn"),
+            prevBtn = document.getElementById("prevBtn"), progress = document.getElementById("progress"),
+            timerElement = document.getElementById("timer");
+        let timeLeft = 5 * 60, timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                timerElement.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                if (timeLeft <= 0) { clearInterval(timerInterval); checkUnansweredAndSubmit(); }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function updateProgress() { progress.style.width = ((current + 1) / questions.length * 100) + "%"; }
+
+        function loadQuestion(index) {
+            const q = questions[index];
+            quizArea.innerHTML = `<h2 class="text-lg font-semibold mb-2">${index + 1}. ${q.q}</h2>
+        <div class="space-y-1">
+        ${q.options.map((opt, i) => `<label class="block p-1 border rounded cursor-pointer transition text-sm hover:bg-indigo-100">
+          <input type="radio" name="option" value="${i}" ${userAnswers[index] == i ? 'checked' : ''}> ${opt}
+        </label>`).join('')}
+        </div>`;
+            prevBtn.classList.toggle("hidden", index === 0);
+            nextBtn.textContent = index === questions.length - 1 ? "Submit ✅" : "Next ➡";
+            updateProgress();
+        }
+
+        function checkUnansweredAndSubmit() {
+            const allAnswered = questions.every((_, i) => userAnswers[i] != null);
+            if (!allAnswered) { alert("⚠️ Please answer all questions!"); return; }
+            showResult();
+        }
+
+        function showResult() {
+            clearInterval(timerInterval);
+            let score = 0; questions.forEach((q, i) => { if (userAnswers[i] == q.answer) score++; });
+            quizArea.innerHTML = `<h2 class="text-xl font-bold text-green-600 mb-2">🎉 Quiz Completed!</h2>
+        <p class="text-sm">Score: <span class="font-bold">${score}</span>/${questions.length}</p>
+        <p class="mt-1 text-xs sm:text-sm">Percentage: <span class="font-semibold">${((score / questions.length) * 100).toFixed(2)}%</span></p>
+        <button onclick="restartQuiz()" class="mt-2 bg-purple-500 hover:bg-purple-700 text-white px-4 py-1.5 rounded shadow transition">🔄 Try Again</button>`;
+            nextBtn.classList.add("hidden"); prevBtn.classList.add("hidden"); progress.style.width = "100%";
+        }
+
+        function restartQuiz() { current = 0; userAnswers = []; timeLeft = 5 * 60; clearInterval(timerInterval); startTimer(); nextBtn.classList.remove("hidden"); loadQuestion(current); }
+
+        nextBtn.addEventListener("click", () => {
+            const selected = document.querySelector("input[name='option']:checked");
+            if (selected) userAnswers[current] = parseInt(selected.value);
+            if (current < questions.length - 1) { current++; loadQuestion(current); } else { checkUnansweredAndSubmit(); }
+        });
+        prevBtn.addEventListener("click", () => { if (current > 0) { current--; loadQuestion(current); } });
+
+        loadQuestion(current); startTimer();
+    </script>
+</body>
+
+</html>
