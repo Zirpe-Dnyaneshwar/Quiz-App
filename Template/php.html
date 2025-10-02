@@ -2,151 +2,309 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Quiz App Compact</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
+  <meta charset="UTF-8" />
+  <title>Quiz App — Django</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* small custom animations */
+    .fade-in {
+      animation: fadeIn 0.35s ease-out;
+    }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-        .progress-bar {
-            transition: width 0.3s ease-in-out;
-        }
-    </style>
+    .btn-anim {
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    .btn-anim:active {
+      transform: translateY(2px) scale(.995);
+    }
+
+    .pulse {
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.15);
+      }
+
+      70% {
+        box-shadow: 0 8px 30px -8px rgba(99, 102, 241, 0.12);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+      }
+    }
+
+    /* progress width transition */
+    .progress-bar {
+      transition: width .28s ease;
+    }
+  </style>
 </head>
 
 <body>
-    {% include 'navbar.html'%}
-    <br><br>
-    <div
-        class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 min-h-screen flex flex-col items-center justify-center px-3">
-        <div class="bg-white w-full text-neutral-600 max-w-3xl p-4 sm:p-6 rounded-2xl shadow-xl fade-in" id="quiz-box">
-            <h1 class="text-2xl sm:text-3xl font-bold text-center text-indigo-700 mb-4">✨ Quiz App ✨</h1>
-            <h5 class="text-indigo-700">PHP Questions</h5>
-
-            <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                <div id="progress" class="bg-gradient-to-r from-indigo-500 to-pink-500 h-2 rounded-full progress-bar"
-                    style="width: 0%"></div>
-            </div>
-
-            <div class="text-right mb-2">
-                <span class="text-sm sm:text-base font-semibold text-red-600">⏳ Time Left: <span
-                        id="timer">10:00</span></span>
-            </div>
-
-            <div id="quiz-area"></div>
-
-            <div class="flex justify-between mt-4">
-                <button id="prevBtn"
-                    class="hidden bg-gray-400 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg shadow transition">⬅
-                    Prev</button>
-                <button id="nextBtn"
-                    class="bg-indigo-500 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg shadow transition">Next
-                    ➡</button>
-            </div>
+  {% include 'navbar.html' %}
+  <div
+    class="bg-gradient-to-br from-slate-900 via-indigo-800 to-pink-700 min-h-screen flex items-center justify-center p-4"><br><br>
+    <div class="w-full max-w-3xl bg-white/95 rounded-2xl shadow-2xl mt-12 p-5 sm:p-8 fade-in">
+      <header class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-700">✨ Quiz App</h1>
+        <div class="text-sm text-gray-600">
+          Develope by <span class="font-semibold">Dnyaneshwar Zirpe</span>
         </div>
+      </header>
 
-        <footer class="mt-4 text-center text-white text-xs sm:text-sm opacity-90">
-            ✨ Designed by <span class="font-semibold">Dnyaneshwar Zirpe</span> ✨
-        </footer>
+      <!-- progress + timer -->
+      <div class="mb-4">
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div id="progress" class="h-2 rounded-full progress-bar bg-gradient-to-r from-indigo-500 to-pink-500"
+            style="width:0%"></div>
+        </div>
+        <div class="flex justify-between items-center mt-2">
+          <div class="text-xs text-gray-500">PHP Question <span id="qnum">1</span>/<span id="qtot">0</span></div>
+          <div class="text-sm font-semibold text-red-600">⏳ Time Left: <span id="timer">10:00</span></div>
+        </div>
+      </div>
+
+      <!-- quiz area -->
+      <main id="quiz-area" class="min-h-[160px]"></main>
+
+      <!-- nav buttons -->
+      <div class="flex justify-between items-center gap-2 mt-5">
+        <button id="prevBtn"
+          class="btn-anim hidden bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-2 rounded-lg shadow-sm">
+          Prev</button>
+
+        <div class="flex items-center gap-3">
+          <button id="restartBtn" class="btn-anim bg-yellow-400 hover:bg-yellow-500 px-3 py-2 rounded-lg shadow-sm">
+            Restart</button>
+          <button id="nextBtn"
+            class="btn-anim bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-lg pulse">Next
+            </button>
+        </div>
+      </div>
+
+      <!-- result placeholder -->
+      <div id="result-area" class="mt-4"></div>
     </div>
+  </div>
 
-    <script>
-        const questions = [
-            { q: "PHP stands for?", options: ["Private Home Page", "Personal Hypertext Processor", "PHP: Hypertext Preprocessor", "Pretext Hypertext Processor"], answer: 2 },
-            { q: "Who developed PHP?", options: ["Rasmus Lerdorf", "Guido van Rossum", "James Gosling", "Bjarne Stroustrup"], answer: 0 },
-            { q: "PHP files are identified by which extension?", options: [".php", ".html", ".phtml", "Both .php and .phtml"], answer: 3 },
-            { q: "Which of the following is used to output data in PHP?", options: ["echo", "print", "Both echo and print", "printf only"], answer: 2 },
-            { q: "Which symbol is used to start a variable in PHP?", options: ["@", "$", "&", "#"], answer: 1 },
-            { q: "PHP is a ____ language.", options: ["Server-side scripting", "Client-side scripting", "Both", "Markup"], answer: 0 },
-            { q: "Which function is used to get the length of a string in PHP?", options: ["strlen()", "size()", "length()", "strlength()"], answer: 0 },
-            { q: "Which of the following is used to connect to a MySQL database in PHP?", options: ["mysqli_connect()", "connect_mysql()", "mysql_connect()", "db_connect()"], answer: 0 },
-            { q: "Which of the following is used to start a session in PHP?", options: ["session_start()", "start_session()", "session_init()", "init_session()"], answer: 0 },
-            { q: "Which of the following is not a PHP data type?", options: ["String", "Integer", "Boolean", "Character"], answer: 3 },
-            { q: "Which of the following is used to define a constant in PHP?", options: ["define()", "const", "constant()", "Both define() and const"], answer: 3 },
-            { q: "Which of the following is the correct way to end a PHP statement?", options: ["Period .", "Colon :", "Semicolon ;", "Comma ,"], answer: 2 },
-            { q: "Which superglobal variable holds form data sent via POST method?", options: ["$_POST", "$POST", "$_GET", "$POSTDATA"], answer: 0 },
-            { q: "Which function is used to include files in PHP?", options: ["include()", "require()", "Both include() and require()", "import()"], answer: 2 },
-            { q: "Which operator is used for concatenation in PHP?", options: ["+", ".", "&", "&&"], answer: 1 },
-            { q: "PHP is mainly used for?", options: ["Frontend design", "Backend development", "Database only", "Networking"], answer: 1 },
-            { q: "Which of the following is used to check the data type of a variable in PHP?", options: ["type()", "gettype()", "typeof()", "datatype()"], answer: 1 },
-            { q: "Which of the following is used to destroy a session in PHP?", options: ["session_destroy()", "destroy_session()", "end_session()", "stop_session()"], answer: 0 },
-            { q: "Which of the following is used to check if a variable is set in PHP?", options: ["isset()", "empty()", "is_set()", "varset()"], answer: 0 },
-            { q: "PHP code is executed on ____.", options: ["Client-side", "Server-side", "Both", "None"], answer: 1 }
-        ];
+  <!-- Django -> JS data (populate from DB) -->
+  <script>
+    const questions = [
+      {% for q in questions %}
+    {
+      q: "{{ q.question_text|escapejs }}",
+        options: [
+          "{{ q.option1|escapejs }}",
+          "{{ q.option2|escapejs }}",
+          "{{ q.option3|escapejs }}",
+          "{{ q.option4|escapejs }}"
+        ],
+          answer: "{{ q.correct_answer|escapejs }}"
+    } {% if not forloop.last %}, {% endif %}
+    {% endfor %}
+    ];
+  </script>
 
+  <!-- Quiz logic -->
+  <script>
+    // state
+    let current = 0;
+    let userAnswers = []; // stores chosen index per question
+    const quizArea = document.getElementById("quiz-area");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const progress = document.getElementById("progress");
+    const timerEl = document.getElementById("timer");
+    const qnumEl = document.getElementById("qnum");
+    const qtotEl = document.getElementById("qtot");
+    const resultArea = document.getElementById("result-area");
 
+    // timer: 10 minutes (in seconds)
+    let timeLeft = 10 * 60;
+    let timerInterval = null;
 
-        let current = 0, userAnswers = [];
-        const quizArea = document.getElementById("quiz-area"), nextBtn = document.getElementById("nextBtn"),
-            prevBtn = document.getElementById("prevBtn"), progress = document.getElementById("progress"),
-            timerElement = document.getElementById("timer");
-        let timeLeft = 10 * 60, timerInterval;
+    // Initialize
+    function init() {
+      qtotEl.textContent = questions.length;
+      // convert answers: keep as string for now; we'll interpret on scoring
+      // start timer
+      startTimer();
+      loadQuestion(0);
+      updateProgress();
+    }
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-                timerElement.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                if (timeLeft <= 0) { clearInterval(timerInterval); checkUnansweredAndSubmit(); }
-                timeLeft--;
-            }, 1000);
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (timeLeft < 0) return;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        timerEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          // TIME'S UP: automatically restart quiz
+          showToast("⏰ Time's up! Quiz will restart now.");
+          setTimeout(() => {
+            restartQuiz();
+          }, 600); // small delay for message
+        }
+        timeLeft--;
+      }, 1000);
+    }
+
+    function showToast(msg) {
+      // small inline toast (temporary)
+      const t = document.createElement('div');
+      t.className = "fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded shadow";
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    function updateProgress() {
+      const pct = ((current + 1) / questions.length) * 100;
+      progress.style.width = `${pct}%`;
+      qnumEl.textContent = current + 1;
+    }
+
+    function loadQuestion(index) {
+      const item = questions[index];
+      if (!item) return;
+      // ensure userAnswers slot exists
+      if (typeof userAnswers[index] === 'undefined') userAnswers[index] = null;
+
+      let optionsHtml = item.options.map((opt, i) => {
+        const checked = (userAnswers[index] === i) ? 'checked' : '';
+        return `<label class="block text-gray-800 p-2 border border-gray-200 rounded-lg cursor-pointer mb-2 hover:bg-indigo-50 transition">
+            <input class="mr-2" type="radio" name="option" value="${i}" ${checked}> ${opt}
+          </label>`;
+      }).join('');
+
+      quizArea.innerHTML = `
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">${index + 1}. ${item.q}</h2>
+        <div>${optionsHtml}</div>
+      `;
+
+      prevBtn.classList.toggle('hidden', index === 0);
+      nextBtn.textContent = (index === questions.length - 1) ? 'Submit ✅' : 'Next ';
+      updateProgress();
+      resultArea.innerHTML = ''; // clear result area while in quiz
+    }
+
+    // When Next clicked
+    nextBtn.addEventListener('click', () => {
+      const selected = document.querySelector("input[name='option']:checked");
+      if (selected) userAnswers[current] = parseInt(selected.value);
+
+      if (current < questions.length - 1) {
+        current++;
+        loadQuestion(current);
+      } else {
+        // last -> submit (but ensure all answered)
+        submitOrWarn();
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (current > 0) {
+        current--;
+        loadQuestion(current);
+      }
+    });
+
+    restartBtn.addEventListener('click', () => {
+      // manual restart when clicked
+      restartQuiz();
+    });
+
+    function submitOrWarn() {
+      const allAnswered = questions.every((_, i) => userAnswers[i] !== null && typeof userAnswers[i] !== 'undefined');
+      if (!allAnswered) {
+        // If not all answered, show modal or simple confirm
+        if (!confirm("⚠️ काही प्रश्न उत्तर दिलेले नाहीत. तरी Submit करायचे का?")) {
+          return;
+        }
+      }
+      showResult();
+    }
+
+    function showResult() {
+      clearInterval(timerInterval);
+
+      // compute score - handle both index-based or text-based correct answer
+      let score = 0;
+      questions.forEach((q, i) => {
+        // q.answer is string from template (could be '1' or 'Python' etc.)
+        const rawAns = q.answer;
+        const maybeIndex = Number(rawAns);
+        let correctIndex = null;
+
+        if (!isNaN(maybeIndex)) {
+          correctIndex = maybeIndex;
+        } else {
+          // find index of option that equals answer string
+          const found = q.options.findIndex(opt => opt === rawAns);
+          if (found !== -1) correctIndex = found;
         }
 
-        function updateProgress() { progress.style.width = ((current + 1) / questions.length * 100) + "%"; }
-
-        function loadQuestion(index) {
-            const q = questions[index];
-            quizArea.innerHTML = `<h2 class="text-lg font-semibold mb-2">${index + 1}. ${q.q}</h2>
-        <div class="space-y-1">
-        ${q.options.map((opt, i) => `<label class="block p-1 border rounded cursor-pointer transition text-sm hover:bg-indigo-100">
-          <input type="radio" name="option" value="${i}" ${userAnswers[index] == i ? 'checked' : ''}> ${opt}
-        </label>`).join('')}
-        </div>`;
-            prevBtn.classList.toggle("hidden", index === 0);
-            nextBtn.textContent = index === questions.length - 1 ? "Submit ✅" : "Next ➡";
-            updateProgress();
+        if (correctIndex !== null && userAnswers[i] === correctIndex) {
+          score++;
         }
+      });
 
-        function checkUnansweredAndSubmit() {
-            const allAnswered = questions.every((_, i) => userAnswers[i] != null);
-            if (!allAnswered) { alert("⚠️ Please answer all questions!"); return; }
-            showResult();
-        }
+      const percent = (score / questions.length) * 100;
 
-        function showResult() {
-            clearInterval(timerInterval);
-            let score = 0; questions.forEach((q, i) => { if (userAnswers[i] == q.answer) score++; });
-            quizArea.innerHTML = `<h2 class="text-xl font-bold text-green-600 mb-2">🎉 Quiz Completed!</h2>
-        <p class="text-sm">Score: <span class="font-bold">${score}</span>/${questions.length}</p>
-        <p class="mt-1 text-xs sm:text-sm">Percentage: <span class="font-semibold">${((score / questions.length) * 100).toFixed(2)}%</span></p>
-        <button onclick="restartQuiz()" class="mt-2 bg-purple-500 hover:bg-purple-700 text-white px-4 py-1.5 rounded shadow transition">🔄 Try Again</button>`;
-            nextBtn.classList.add("hidden"); prevBtn.classList.add("hidden"); progress.style.width = "100%";
-        }
+      quizArea.innerHTML = `
+        <div class="p-4 bg-green-50 border border-green-100 rounded">
+          <h3 class="text-xl font-bold text-green-700">🎉 Quiz Completed!</h3>
+          <p class="mt-2 text-gray-700">Score: <strong>${score}</strong> / ${questions.length}</p>
+          <p class="text-sm text-gray-600 mt-1">Percentage: <strong>${percent.toFixed(2)}%</strong></p>
+        </div>
+      `;
+      // show restart button prominently
+      resultArea.innerHTML = `<button id="again" class="mt-3 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow">🔄 Try Again</button>`;
 
-        function restartQuiz() { current = 0; userAnswers = []; timeLeft = 5 * 60; clearInterval(timerInterval); startTimer(); nextBtn.classList.remove("hidden"); loadQuestion(current); }
+      document.getElementById('again').addEventListener('click', () => restartQuiz());
+      // hide nav
+      nextBtn.classList.add('hidden');
+      prevBtn.classList.add('hidden');
+    }
 
-        nextBtn.addEventListener("click", () => {
-            const selected = document.querySelector("input[name='option']:checked");
-            if (selected) userAnswers[current] = parseInt(selected.value);
-            if (current < questions.length - 1) { current++; loadQuestion(current); } else { checkUnansweredAndSubmit(); }
-        });
-        prevBtn.addEventListener("click", () => { if (current > 0) { current--; loadQuestion(current); } });
+    function restartQuiz() {
+      // Reset state & timer
+      current = 0;
+      userAnswers = [];
+      timeLeft = 10 * 60;
+      nextBtn.classList.remove('hidden');
+      prevBtn.classList.remove('hidden');
+      startTimer();
+      loadQuestion(0);
+      updateProgress();
+      resultArea.innerHTML = '';
+      showToast("🔁 Quiz restarted");
+    }
 
-        loadQuestion(current); startTimer();
-    </script>
+    // initialize app
+    init();
+  </script>
 </body>
 
 </html>

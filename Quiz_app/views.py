@@ -7,13 +7,16 @@ def home(request):
     return render(request,'home.html',{'questions': questions})
 
 def c(request):
-    return render(request,'c.html',)
+    questions = Clanguage_Question.objects.all()
+    return render(request,'c.html',{'questions': questions})
 
 def cpp(request):
-    return render(request,'cpp.html')
+    questions = Cpp_Question.objects.all()
+    return render(request,'cpp.html',{'questions': questions})
 
 def java(request):
-    return render(request,'java.html')
+    questions = Java_Question.objects.all()
+    return render(request,'java.html',{'questions': questions})
 
 def python(request):
     return render(request,'python.html')
