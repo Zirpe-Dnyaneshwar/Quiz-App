@@ -31,3 +31,23 @@ class Cpp_QuestionAdmin(admin.ModelAdmin):
 class Java_QuestionAdmin(admin.ModelAdmin):
     list_display = ('id', 'question_text', 'correct_answer')
     search_fields = ('question_text',)
+    
+@admin.register(Python_Question)
+class Python_QuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'question_text', 'correct_answer')
+    search_fields = ('question_text',)
+
+@admin.register(PHP_Question)
+class PHP_QuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'question_text', 'correct_answer')
+    search_fields = ('question_text',)
+    
+@admin.register(HTML_Question)
+class HTML_QuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'question_text', 'correct_answer')
+    search_fields = ('question_text',)
+    
+@admin.register(Javascript_Question)
+class Javascript_QuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'question_text', 'correct_answer')
+    search_fields = ('question_text',)

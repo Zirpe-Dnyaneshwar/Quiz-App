@@ -19,16 +19,20 @@ def java(request):
     return render(request,'java.html',{'questions': questions})
 
 def python(request):
-    return render(request,'python.html')
+    questions = Python_Question.objects.all()
+    return render(request,'python.html',{'questions': questions})
 
 def php(request):
-    return render(request,'php.html')
+    questions = PHP_Question.objects.all()
+    return render(request,'php.html',{'questions': questions})
 
 def qhtml(request):
-    return render(request,'qhtml.html')
+    questions = HTML_Question.objects.all()
+    return render(request,'qhtml.html',{'questions': questions})
 
 def qjavascript(request):
-    return render(request,'qjavascript.html')
+    questions = Javascript_Question.objects.all()
+    return render(request,'qjavascript.html',{'questions': questions})
 
 def login(request):
     return render(request,'login.html')
