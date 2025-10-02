@@ -42,7 +42,7 @@
       </div>
 
       <div class="text-right mb-2">
-        <span class="text-sm sm:text-base font-semibold text-red-600">⏳ Time Left: <span id="timer">05:00</span></span>
+        <span class="text-sm sm:text-base font-semibold text-red-600">⏳ Time Left: <span id="timer">10:00</span></span>
       </div>
 
       <div id="quiz-area"></div>
@@ -89,7 +89,7 @@
     const quizArea = document.getElementById("quiz-area"), nextBtn = document.getElementById("nextBtn"),
       prevBtn = document.getElementById("prevBtn"), progress = document.getElementById("progress"),
       timerElement = document.getElementById("timer");
-    let timeLeft = 5 * 60, timerInterval;
+    let timeLeft = 10 * 60, timerInterval;
 
     function startTimer() {
       timerInterval = setInterval(() => {
