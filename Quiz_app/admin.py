@@ -51,3 +51,4 @@ class HTML_QuestionAdmin(admin.ModelAdmin):
 class Javascript_QuestionAdmin(admin.ModelAdmin):
     list_display = ('id', 'question_text', 'correct_answer')
     search_fields = ('question_text',)
+    
