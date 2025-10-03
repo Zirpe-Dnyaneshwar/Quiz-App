@@ -7,7 +7,7 @@ class UserCreationForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'placeholder':'Username',
-                'class':'form-control '
+                'class': 'input-animate w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
             }
         )
     ) 
@@ -16,7 +16,7 @@ class UserCreationForm(forms.ModelForm):
         widget=forms.PasswordInput(
             attrs={
                 'placeholder':'Password',
-                'class':'form-control '
+                'class': 'input-animate w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
             }
         )
     ) 
@@ -25,7 +25,7 @@ class UserCreationForm(forms.ModelForm):
         widget=forms.PasswordInput(
             attrs={
                 'placeholder':'Comfirm Password',
-                'class':'form-control '
+                'class': 'input-animate w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
             }
         )
     ) 
@@ -36,24 +36,25 @@ class UserCreationForm(forms.ModelForm):
 
 #=========================================================================
 class Userloginform(forms.Form):
-    username=forms.CharField(
-        label="Enter Your Username",
+    username = forms.CharField(
+        label="",
         widget=forms.TextInput(
             attrs={
-                'placeholder':'Username',
-                'class':'form-control mb-4'
+                'placeholder': 'Username',
+                'class': 'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none'
             }
         )
-    ) 
-    password=forms.CharField(
-        label="Enter Your password",
+    )
+    password = forms.CharField(
+        label="",
         widget=forms.PasswordInput(
             attrs={
-                'placeholder':'Password',
-                'class':'form-control mb-4'
+                'placeholder': 'Password',
+                'class': 'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none'
             }
         )
-    )     
+    )
+ 
 
 #=========================================================================
 

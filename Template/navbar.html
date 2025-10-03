@@ -4,11 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz Navbar with Login</title>
+  <title>Quiz Navbar with Dark/Light Mode</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body class="bg-gray-900 text-white">
+<body class="bg-gray-900 text-white transition-colors duration-300" id="body">
 
   <!-- Navbar -->
   <nav class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-lg fixed w-full z-50">
@@ -31,35 +32,50 @@
           <a href="{% url 'javascript' %}" class="hover:text-yellow-300 transition">JavaScript</a>
         </div>
 
-        <!-- User Login / Profile -->
-        <div class="hidden md:flex items-center space-x-4">
-          <a href="{% url 'login'%}">
-            <button id="loginBtn"
-              class="bg-yellow-400 text-black px-4 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
-              Login
+        <!-- Right Side -->
+        <div class="flex items-center space-x-4">
+          <!-- Dark/Light Mode Toggle -->
+          <button id="modeToggle" class="text-white hover:text-yellow-300 transition">
+            <i class="fa fa-adjust fa-lg"></i>
+          </button>
+
+          <!-- User Login Icon for Desktop -->
+          <div class="hidden md:flex items-center space-x-4">
+            {% if request.user.is_authenticated %}
+              <span class="text-yellow-300 font-semibold">Welcome {{ request.user.username }}</span>
+              <a href="{% url 'logout_view' %}" class="hover:text-red-400 transition">
+                <i class="fa fa-sign-out fa-lg"></i>
+              </a>
+            {% else %}
+              <a href="{% url 'login'%}" class="hover:text-yellow-300 transition">
+                <i class="fa fa-user-circle fa-lg"></i>
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <div class="md:hidden flex items-center space-x-2">
+            {% if request.user.is_authenticated %}
+              <span class="text-yellow-300 font-semibold text-sm">Hi {{ request.user.username }}</span>
+              <a href="{% url 'logout_view' %}" class="hover:text-red-400 transition">
+                <i class="fa fa-sign-out fa-lg"></i>
+              </a>
+            {% else %}
+              <a href="{% url 'login'%}" class="hover:text-yellow-300 transition">
+                <i class="fa fa-user-circle fa-lg"></i>
+              </a>
+            {% endif %}
+
+            <button id="menu-btn" class="focus:outline-none">
+              <svg class="w-6 h-6" fill="none" stroke="white" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
             </button>
-          </a>
+          </div>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <div class="md:hidden flex items-center space-x-2">
-          <button id="mobileLoginBtn"
-            class="bg-yellow-400 text-black px-3 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
-            Login
-          </button>
-          <button id="menu-btn" class="focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          {% if request.user.is_authenticated %}
-            <span style="color: yellow;">Welcome &nbsp;</span>{{ request.user.username }} &nbsp;
-            <a href="{% url 'logout_view' %}"> <i class="fa fa-sign-out btn btn-danger" style="font-weight: bold;"> Log
-                Out</i> </a> &nbsp;
-            {% else %}
-            <a class="nav-link text-white" href="{% url 'login'%}">Login&nbsp;<i class="fa fa-user"></i></a>
-            {% endif %}
-        </div>
       </div>
     </div>
 
@@ -72,38 +88,43 @@
       <a href="{% url 'php' %}" class="block hover:text-yellow-300">PHP</a>
       <a href="{% url 'html'%}" class="block hover:text-yellow-300">HTML</a>
       <a href="{% url 'javascript' %}" class="block hover:text-yellow-300">JavaScript</a>
+
+      <!-- Mobile User Login -->
+      <div class="pt-4 border-t border-gray-700">
+        {% if request.user.is_authenticated %}
+          <span class="text-yellow-300 font-semibold block">Welcome {{ request.user.username }}</span>
+          <a href="{% url 'logout_view' %}" class="block hover:text-red-400 mt-2">
+            <i class="fa fa-sign-out"></i> Logout
+          </a>
+        {% else %}
+          <a href="{% url 'login'%}" class="block hover:text-yellow-300">
+            <i class="fa fa-user-circle"></i> Login
+          </a>
+        {% endif %}
+      </div>
     </div>
   </nav>
 
-
-
   <script>
-    // Mobile Menu Toggle
     const menuBtn = document.getElementById('menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
+    const modeToggle = document.getElementById('modeToggle');
+    const body = document.getElementById('body');
+
     menuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
     });
 
-    // Login Modal Toggle
-    const loginBtnDesktop = document.getElementById('loginBtn');
-    const loginBtnMobile = document.getElementById('mobileLoginBtn');
-    const loginModal = document.getElementById('loginModal');
-    const closeModal = document.getElementById('closeModal');
-
-    function openModal() { loginModal.classList.remove('hidden'); }
-    function closeModalFunc() { loginModal.classList.add('hidden'); }
-
-    loginBtnDesktop.addEventListener('click', openModal);
-    loginBtnMobile.addEventListener('click', openModal);
-    closeModal.addEventListener('click', closeModalFunc);
-
-    // Close modal on clicking outside the modal content
-    loginModal.addEventListener('click', (e) => {
-      if (e.target === loginModal) closeModalFunc();
+    modeToggle.addEventListener('click', () => {
+      if (body.classList.contains('bg-gray-900')) {
+        body.classList.remove('bg-gray-900', 'text-white');
+        body.classList.add('bg-white', 'text-black');
+      } else {
+        body.classList.remove('bg-white', 'text-black');
+        body.classList.add('bg-gray-900', 'text-white');
+      }
     });
   </script>
 
 </body>
-
 </html>

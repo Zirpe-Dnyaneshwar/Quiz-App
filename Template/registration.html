@@ -6,48 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration Page with Password Toggle</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        /* Input animation */
         .input-animate {
             transition: all 0.3s ease-in-out;
         }
 
-        .input-animate:hover,
         .input-animate:focus {
             border-color: #6366f1;
-            /* indigo-500 */
             box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
         }
 
-        /* Button animation */
         .btn-animate {
             transition: all 0.3s ease-in-out;
         }
 
-        .btn-animate:hover,
-        .btn-animate:focus,
-        .btn-animate:active {
+        .btn-animate:hover {
             transform: scale(1.05);
             box-shadow: 0 10px 15px rgba(99, 102, 241, 0.3);
         }
+
+        .error-text {
+            color: #dc2626;
+            font-size: 0.875rem;
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
+<body class="bg-gray-100">
     {% include 'navbar.html' %}
-    <div class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
-
-        <div class="bg-white rounded-2xl shadow-xl p-4 w-full max-w-md" style="margin-top: 70px;">
+    <div class="flex items-center justify-center min-h-screen p-4 ">
+        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md mt-4">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Register</h1>
 
-            <form id="registerForm" class="space-y-4" method="post">
+            <form id="registerForm" class="space-y-6" method="post">
                 {% csrf_token %}
+
                 <!-- Username -->
-                {{form.username}} <br>
-                {{form.password}} <br>
-                {{form.confirm_password}} <br>
-               
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    {{ form.username }}
+                    <p id="usernameError" class="error-text hidden mt-1">⚠ Username must be alphanumeric and max 10 characters</p>
+                </div>
+
+                <!-- Password -->
+                <div class="relative">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    {{ form.password }}
+                    <button type="button" id="togglePassword"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-800">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="relative">
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    {{ form.confirm_password }}
+                    <button type="button" id="toggleConfirmPassword"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-800">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    <p id="passwordError" class="error-text hidden mt-1">⚠ Passwords do not match</p>
+                </div>
 
                 <!-- Submit Button -->
                 <button type="submit"
@@ -73,22 +94,22 @@
         const togglePassword = document.getElementById('togglePassword');
         const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
 
-        // Toggle password visibility
         togglePassword.addEventListener('click', () => {
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
+            togglePassword.innerHTML = type === 'password' ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
         });
+
         toggleConfirmPassword.addEventListener('click', () => {
             const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
             confirmPassword.setAttribute('type', type);
+            toggleConfirmPassword.innerHTML = type === 'password' ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
         });
 
-        // Form validation
         registerForm.addEventListener('submit', function (e) {
             e.preventDefault();
             let valid = true;
 
-            // Username validation: alphanumeric, max 10 chars
             const usernamePattern = /^[a-zA-Z0-9]{1,10}$/;
             if (!usernamePattern.test(username.value)) {
                 usernameError.classList.remove('hidden');
@@ -97,7 +118,6 @@
                 usernameError.classList.add('hidden');
             }
 
-            // Password match validation
             if (password.value !== confirmPassword.value || password.value === "") {
                 passwordError.classList.remove('hidden');
                 valid = false;
@@ -111,7 +131,6 @@
             }
         });
     </script>
-
 </body>
 
 </html>
