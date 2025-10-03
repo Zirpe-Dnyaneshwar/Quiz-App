@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz Navbar with Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-900 text-white">
 
   <!-- Navbar -->
@@ -32,25 +34,31 @@
         <!-- User Login / Profile -->
         <div class="hidden md:flex items-center space-x-4">
           <a href="{% url 'login'%}">
-            <button id="loginBtn" 
-            class="bg-yellow-400 text-black px-4 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
-            Login
-          </button>
+            <button id="loginBtn"
+              class="bg-yellow-400 text-black px-4 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
+              Login
+            </button>
           </a>
         </div>
 
         <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center space-x-2">
-          <button id="mobileLoginBtn" class="bg-yellow-400 text-black px-3 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
+          <button id="mobileLoginBtn"
+            class="bg-yellow-400 text-black px-3 py-1 rounded-full font-semibold hover:bg-yellow-300 transition">
             Login
           </button>
           <button id="menu-btn" class="focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="white" viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"></path>
+            <svg class="w-6 h-6" fill="none" stroke="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
+          {% if request.user.is_authenticated %}
+            <span style="color: yellow;">Welcome &nbsp;</span>{{ request.user.username }} &nbsp;
+            <a href="{% url 'logout_view' %}"> <i class="fa fa-sign-out btn btn-danger" style="font-weight: bold;"> Log
+                Out</i> </a> &nbsp;
+            {% else %}
+            <a class="nav-link text-white" href="{% url 'login'%}">Login&nbsp;<i class="fa fa-user"></i></a>
+            {% endif %}
         </div>
       </div>
     </div>
@@ -67,7 +75,7 @@
     </div>
   </nav>
 
-  
+
 
   <script>
     // Mobile Menu Toggle
@@ -97,4 +105,5 @@
   </script>
 
 </body>
+
 </html>

@@ -1,7 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render ,redirect,HttpResponse
 from .models import *
+from .form import *
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+
 def home(request):
     questions = Question.objects.all()
     return render(request,'home.html',{'questions': questions})
@@ -34,8 +40,40 @@ def qjavascript(request):
     questions = Javascript_Question.objects.all()
     return render(request,'qjavascript.html',{'questions': questions})
 
-def login(request):
-    return render(request,'login.html')
+def user_login(request):
+    if request.method == "POST":
+        form = Userloginform(request.POST)
+        if form.is_valid():
+            username1 = request.POST.get('username')
+            password1 = request.POST.get('password')
+            user1 = authenticate(request, username=username1, password=password1)
+            if user1:
+                if user1.is_active:
+                    login(request, user1)   
+                    return redirect('home')
+                else:
+                    return HttpResponse("Invalid Person")
+            else:
+                return HttpResponse("Not Allowed To visit Website")
+        else:
+            return HttpResponse("Invalid Details")          
+    else:
+        form = Userloginform()
+        return render(request, 'login.html', {'form': form})
 
 def registration(request):
-    return render(request,'registration.html')
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():   
+            new_user = form.save(commit=False)  
+            new_user.save()  
+            return redirect("login")  
+        else:
+            print(form.errors)   
+    else:
+        form = UserCreationForm()
+    return render(request, "registration.html", {"form": form})
+
+def logOut(request):
+    logout(request)
+    return redirect('home')
