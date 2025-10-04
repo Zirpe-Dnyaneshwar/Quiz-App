@@ -1,43 +1,42 @@
-# Python cache
+
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environment
+
 venv/
 env/
 ENV/
 *.env
 
-# IDE / Editor settings
+
 .vscode/
 .idea/
 
-# Django stuff
+
 *.sqlite3
 db.sqlite3
 media/
 staticfiles/
 
-# Logs
+
 *.log
 
-# OS generated files
+
 .DS_Store
 Thumbs.db
 
-# Byte-compiled / optimized / DLL files
 *.pyc
 *.pyo
 *.pyd
 .Python
 
-# Unit test / coverage reports
+
 htmlcov/
 .tox/
 .coverage
 coverage.xml
 
-# Migrations (optional - ठेवायच्या असल्यास काढून टाक)
+
 */migrations/__pycache__/
 */migrations/*.pyc
