@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-yikf7o7hc0a!38y$vuw%&cc0eb=jvlw)u*lp4c1_qe41redeyy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['web-production-898fe.up.railway.app',  
+    '.railway.app',                         
+    'localhost',
+    '127.0.0.1',]
 
 
 # Application definition
@@ -75,12 +78,14 @@ WSGI_APPLICATION = 'Quiz_Project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'quizprojectdb',
-        'USER':'root',
-        'PASSWORD':'root'
+        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
+        'NAME': os.environ.get('RAILWAY_DB_NAME', 'quizprojectdb'),
+        'USER': os.environ.get('RAILWAY_DB_USER', 'root'),
+        'PASSWORD': os.environ.get('RAILWAY_DB_PASSWORD', 'root'),
+        
     }
 }
 
