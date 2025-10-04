@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,15 +80,34 @@ WSGI_APPLICATION = 'Quiz_Project.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
-        'NAME': os.environ.get('RAILWAY_DB_NAME', 'quizprojectdb'),
-        'USER': os.environ.get('RAILWAY_DB_USER', 'root'),
-        'PASSWORD': os.environ.get('RAILWAY_DB_PASSWORD', 'root'),
-        
+from decouple import config
+
+
+ENVIRONMENT = config('ENVIRONMENT', default='local')
+
+if ENVIRONMENT == 'production':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('quizprojectdb', default='db.sqlite3'),
+            'USER': config('root'),
+            'PASSWORD': config('root'),
+            'HOST': config('RAILWAY_DB_HOST'),
+            'PORT': int(config('RAILWAY_DB_PORT', 3306)),
+        }
     }
-}
+else:  # local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+           'NAME': config('quizprojectdb', default='db.sqlite3'),
+            'USER': config('root'),
+            'PASSWORD': config('root'),
+            'HOST': config('LOCAL_DB_HOST'),
+            'PORT': int(config('LOCAL_DB_PORT', 3306)),
+        }
+    }
+
 
 
 # Password validation
